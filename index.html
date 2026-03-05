@@ -1728,12 +1728,12 @@ const CHAPTER_NAMES = [
   'Respiratory system',
   'Digestive system',
   'Musculoskeletal system',
-  'Endocrine system',
   'Urinary system',
+  'Endocrine system',
   'Reproductive system'
 ];
 
-const CHAPTER_EMOJIS = ['🔬', '🧠', '👁️', '❤️', '🫁', '🫀', '💪', '⚗️', '🫘', '🧬'];
+const CHAPTER_EMOJIS = ['🔬', '🧠', '👁️', '❤️', '🫁', '🫀', '💪', '🫘', '⚗️', '🧬'];
 
 // Placeholder question generator — replace with real DB questions
 function makePlaceholderQuestion(chapter, idx) {
@@ -2256,29 +2256,23 @@ async function handleAnswer(chosen, correctAnswer, question) {
     state.correctAnswers++;
     state.sessionAnswers[state.currentQuestionIdx + 1] = chosen;
     feedback.className = 'feedback-area show correct';
-    feedback.textContent = '✓ Correct! Moving to next question…';
-  } else {
-    state.wrongAnswers++;
-    feedback.className = 'feedback-area show wrong';
-    feedback.textContent = `✗ Incorrect. The correct answer is ${correctAnswer}. Restarting from question 1…`;
-  }
-
-  updateQuestionStats(question.id, isCorrect);
-
-  if (isCorrect) {
+    feedback.textContent = '✓ Correct !';
     state.currentQuestionIdx++;
     await saveProgress();
     if (state.currentQuestionIdx >= state.questions.length) {
-      feedback.textContent = '🎉 Chapter complete! Well done!';
-      setTimeout(exitQuiz, 2000);
+      feedback.textContent = '🎉 Chapitre terminé ! Bravo !';
+      setTimeout(exitQuiz, 1500);
       return;
     }
   } else {
-    state.currentQuestionIdx = 0;
+    state.wrongAnswers++;
+    feedback.className = 'feedback-area show wrong';
+    feedback.textContent = `✗ Incorrect. La bonne réponse est ${correctAnswer}.`;
     await saveProgress();
   }
 
-  setTimeout(renderQuestion, isCorrect ? 1200 : 2200);
+  updateQuestionStats(question.id, isCorrect);
+  setTimeout(renderQuestion, 700);
 }
 
 async function handleMultiAnswer(correctArr, question) {
@@ -2307,29 +2301,23 @@ async function handleMultiAnswer(correctArr, question) {
     state.correctAnswers++;
     state.sessionAnswers[state.currentQuestionIdx + 1] = [...selected].join(',');
     feedback.className = 'feedback-area show correct';
-    feedback.textContent = '✓ Correct! Moving to next question…';
-  } else {
-    state.wrongAnswers++;
-    feedback.className = 'feedback-area show wrong';
-    feedback.textContent = `✗ Incorrect. Correct answers: ${correctArr.join(', ')}. Restarting from question 1…`;
-  }
-
-  updateQuestionStats(question.id, isCorrect);
-
-  if (isCorrect) {
+    feedback.textContent = '✓ Correct !';
     state.currentQuestionIdx++;
     await saveProgress();
     if (state.currentQuestionIdx >= state.questions.length) {
-      feedback.textContent = '🎉 Chapter complete! Well done!';
-      setTimeout(exitQuiz, 2000);
+      feedback.textContent = '🎉 Chapitre terminé ! Bravo !';
+      setTimeout(exitQuiz, 1500);
       return;
     }
   } else {
-    state.currentQuestionIdx = 0;
+    state.wrongAnswers++;
+    feedback.className = 'feedback-area show wrong';
+    feedback.textContent = `✗ Incorrect. Bonnes réponses : ${correctArr.join(', ')}.`;
     await saveProgress();
   }
 
-  setTimeout(renderQuestion, isCorrect ? 1200 : 2500);
+  updateQuestionStats(question.id, isCorrect);
+  setTimeout(renderQuestion, 700);
 }
 
 // ============================================================
