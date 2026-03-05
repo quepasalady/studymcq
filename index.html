@@ -1,0 +1,2532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyMCQ — Master Your Exams</title>
+  <style>
+    /* ===== RESET & VARIABLES ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #181c27;
+      --surface2: #1e2235;
+      --border: #2a2f45;
+      --accent: #4f8ef7;
+      --accent2: #7c5cfc;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --text: #e8ecf5;
+      --text2: #8892aa;
+      --text3: #5a6380;
+      --radius: 12px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===== AUTH SCREEN ===== */
+    #auth-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: radial-gradient(ellipse at 30% 20%, rgba(79,142,247,0.08) 0%, transparent 60%),
+                  radial-gradient(ellipse at 70% 80%, rgba(124,92,252,0.08) 0%, transparent 60%),
+                  var(--bg);
+    }
+
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 48px 40px;
+      width: 420px;
+      box-shadow: var(--shadow);
+    }
+
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .auth-logo h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text);
+    }
+
+    .auth-logo h1 span { color: var(--accent); }
+
+    .auth-logo p {
+      color: var(--text2);
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      background: var(--surface2);
+      border-radius: var(--radius);
+      padding: 4px;
+      margin-bottom: 24px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text2);
+      transition: all 0.2s;
+    }
+
+    .auth-tab.active {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      color: var(--text2);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus { border-color: var(--accent); }
+
+    .btn-primary {
+      width: 100%;
+      padding: 13px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      font-family: inherit;
+      margin-top: 8px;
+    }
+
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .auth-error {
+      color: var(--red);
+      font-size: 13px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    /* ===== MAIN APP LAYOUT ===== */
+    #app {
+      display: none;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    /* Top navbar */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 60px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+
+    .nav-logo span { color: var(--accent); }
+
+    .nav-tabs {
+      display: flex;
+      gap: 4px;
+    }
+
+    .nav-tab {
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text2);
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .nav-tab:hover { background: var(--surface2); color: var(--text); }
+    .nav-tab.active { background: var(--accent); color: #fff; }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: var(--surface2);
+      border-radius: 20px;
+      font-size: 13px;
+      color: var(--text2);
+    }
+
+    .user-avatar {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: #fff;
+    }
+
+    .btn-logout {
+      padding: 7px 14px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text2);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+    /* Main body below navbar */
+    .app-body {
+      display: flex;
+      margin-top: 60px;
+      height: calc(100vh - 60px);
+    }
+
+    /* ===== LEFT SIDEBAR ===== */
+    .sidebar {
+      width: 280px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      padding: 20px 20px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-header h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .sidebar-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+    }
+
+    .sidebar-list::-webkit-scrollbar { width: 4px; }
+    .sidebar-list::-webkit-scrollbar-track { background: transparent; }
+    .sidebar-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .history-item {
+      padding: 12px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+      margin-bottom: 8px;
+    }
+
+    .history-item:hover {
+      background: var(--surface2);
+      border-color: var(--border);
+    }
+
+    .history-item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+
+    .history-chapter {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .history-date {
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    .history-stats {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .stat-pill {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .stat-pill.green { background: rgba(34,197,94,0.15); color: var(--green); }
+    .stat-pill.red { background: rgba(239,68,68,0.15); color: var(--red); }
+    .stat-pill.gray { background: rgba(90,99,128,0.2); color: var(--text3); }
+
+    .progress-bar-track {
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 3px;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .pb-green { background: var(--green); transition: width 0.3s; }
+    .pb-red { background: var(--red); transition: width 0.3s; }
+    .pb-white { background: #fff; opacity: 0.12; }
+
+    .sidebar-empty {
+      padding: 32px 20px;
+      text-align: center;
+      color: var(--text3);
+      font-size: 13px;
+    }
+
+    /* ===== MAIN CONTENT ===== */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--bg);
+    }
+
+    /* ===== VIEWS ===== */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ===== HOME VIEW ===== */
+    .home-hero {
+      padding: 48px 40px 32px;
+      background: linear-gradient(135deg, rgba(79,142,247,0.06) 0%, transparent 60%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .home-hero h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .home-hero p { color: var(--text2); font-size: 15px; }
+
+    .home-stats-row {
+      display: flex;
+      gap: 16px;
+      padding: 24px 40px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stat-card {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .stat-card .label { font-size: 12px; color: var(--text2); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-card .value { font-size: 28px; font-weight: 700; color: var(--text); }
+    .stat-card .sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .chapters-section { padding: 32px 40px; }
+
+    .chapters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .chapter-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chapter-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.2s;
+    }
+
+    .chapter-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(79,142,247,0.1); }
+    .chapter-card:hover::before { transform: scaleX(1); }
+
+    .chapter-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .chapter-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .chapter-progress-wrap { margin-bottom: 10px; }
+    .chapter-progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+    .chapter-progress-bar { height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+    .chapter-progress-fill { height: 100%; background: var(--accent); border-radius: 2px; }
+
+    .chapter-meta {
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    .exam-section {
+      padding: 0 40px 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .exam-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .exam-card:hover { border-color: var(--accent2); transform: translateY(-2px); }
+
+    .exam-card-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: rgba(124,92,252,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    .exam-card h3 { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .exam-card p { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+    /* ===== QUIZ VIEW ===== */
+    #quiz-view {
+      padding: 0;
+      display: none;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    #quiz-view.active { display: flex; }
+
+    .quiz-header {
+      padding: 20px 40px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .quiz-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .quiz-breadcrumb {
+      font-size: 12px;
+      color: var(--text3);
+      margin-top: 2px;
+    }
+
+    .quiz-meta { display: flex; gap: 16px; align-items: center; }
+
+    .score-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .score-badge.green { background: rgba(34,197,94,0.15); color: var(--green); }
+    .score-badge.red { background: rgba(239,68,68,0.15); color: var(--red); }
+
+    .btn-back {
+      padding: 8px 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text2);
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .btn-back:hover { color: var(--text); border-color: var(--text2); }
+
+    .quiz-body {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .question-container {
+      width: 100%;
+      max-width: 700px;
+      font-family: 'Times New Roman', Times, serif !important;
+    }
+
+    .question-counter {
+      font-size: 13px;
+      color: var(--text3);
+      margin-bottom: 12px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+
+    .question-text {
+      font-size: 20px;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 32px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-btn {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+      color: var(--text);
+      font-size: 16px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: var(--surface2);
+      border-color: var(--accent);
+    }
+
+    .option-btn:disabled { cursor: not-allowed; }
+
+    .option-btn.correct {
+      background: rgba(34,197,94,0.12);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .option-btn.wrong {
+      background: rgba(239,68,68,0.12);
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .option-letter {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+
+    .option-btn.correct .option-letter { background: var(--green); border-color: var(--green); color: #fff; }
+    .option-btn.wrong .option-letter { background: var(--red); border-color: var(--red); color: #fff; }
+
+    .feedback-area {
+      margin-top: 24px;
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-family: 'Times New Roman', Times, serif;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .feedback-area.show { display: block; }
+    .feedback-area.correct { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: var(--green); }
+    .feedback-area.wrong { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--red); }
+
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ===== EXAM VIEW ===== */
+    #exam-view {
+      padding: 0;
+      display: none;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    #exam-view.active { display: flex; }
+
+    .exam-header {
+      padding: 16px 32px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .exam-timer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--surface2);
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .exam-timer.warning { color: var(--yellow); }
+    .exam-timer.danger { color: var(--red); }
+
+    .exam-progress-info {
+      font-size: 13px;
+      color: var(--text2);
+    }
+
+    .exam-body {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .exam-main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 40px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .exam-question-wrap { width: 100%; max-width: 700px; }
+
+    .exam-q-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 32px;
+    }
+
+    .btn-nav {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text2);
+    }
+
+    .btn-nav:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+    .btn-nav.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn-nav.primary:hover { opacity: 0.9; }
+
+    .exam-sidebar {
+      width: 200px;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      padding: 20px 16px;
+      overflow-y: auto;
+    }
+
+    .exam-sidebar h4 { font-size: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+
+    .q-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+    }
+
+    .q-dot {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--surface2);
+      color: var(--text3);
+      transition: all 0.15s;
+      border: 1px solid var(--border);
+    }
+
+    .q-dot:hover { border-color: var(--accent); }
+    .q-dot.answered { background: rgba(79,142,247,0.2); color: var(--accent); border-color: var(--accent); }
+    .q-dot.current { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .q-dot.skipped { background: rgba(245,158,11,0.15); color: var(--yellow); border-color: var(--yellow); }
+
+    .btn-submit-exam {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      background: var(--accent2);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.2s;
+    }
+
+    .btn-submit-exam:hover { opacity: 0.9; }
+
+    /* ===== COURSES VIEW ===== */
+    .courses-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 60vh;
+      text-align: center;
+      gap: 16px;
+    }
+
+    .courses-icon { font-size: 56px; }
+    .courses-placeholder h2 { font-size: 24px; font-weight: 700; color: var(--text); }
+    .courses-placeholder p { font-size: 15px; color: var(--text2); max-width: 400px; line-height: 1.6; }
+
+    /* ===== MODALS ===== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px;
+      width: 560px;
+      max-width: 95vw;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: translateY(20px);
+      transition: transform 0.2s;
+    }
+
+    .modal-overlay.show .modal { transform: translateY(0); }
+
+    .modal h2 { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .modal p { color: var(--text2); font-size: 14px; line-height: 1.6; margin-bottom: 16px; }
+
+    .modal-info-list {
+      background: var(--surface2);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .modal-info-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 0;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .modal-info-item .icon { font-size: 16px; width: 24px; text-align: center; }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .btn-cancel {
+      flex: 1;
+      padding: 12px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text2);
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .btn-cancel:hover { border-color: var(--text2); color: var(--text); }
+
+    .btn-confirm {
+      flex: 1;
+      padding: 12px;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.2s;
+    }
+
+    .btn-confirm:hover { opacity: 0.9; }
+
+    /* Custom Exam Modal */
+    .config-section { margin-bottom: 20px; }
+    .config-section h4 { font-size: 13px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+
+    .toggle-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .toggle-btn {
+      padding: 8px 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text2);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .toggle-btn.active { background: rgba(79,142,247,0.2); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+
+    .chapters-checkboxes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .ch-check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      background: var(--surface2);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text2);
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+
+    .ch-check input { width: 14px; height: 14px; accent-color: var(--accent); cursor: pointer; }
+    .ch-check:has(input:checked) { border-color: var(--accent); color: var(--accent); }
+
+    /* Exam Results Modal */
+    .results-score-big {
+      text-align: center;
+      padding: 24px;
+      background: var(--surface2);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+    }
+
+    .results-score-big .pct {
+      font-size: 56px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .results-score-big .pct.pass { color: var(--green); }
+    .results-score-big .pct.fail { color: var(--red); }
+    .results-score-big .sub { font-size: 14px; color: var(--text2); margin-top: 4px; }
+
+    .results-breakdown {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .rb-item {
+      text-align: center;
+      padding: 14px;
+      background: var(--surface2);
+      border-radius: var(--radius);
+    }
+
+    .rb-item .val { font-size: 22px; font-weight: 700; color: var(--text); }
+    .rb-item .lbl { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      font-size: 14px;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+    }
+
+    /* Loading */
+    .loading-spinner {
+      display: inline-block;
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .divider { height: 1px; background: var(--border); margin: 0 40px; }
+
+    /* Scrollbar for main */
+    .main-content::-webkit-scrollbar,
+    .exam-main::-webkit-scrollbar { width: 6px; }
+    .main-content::-webkit-scrollbar-track,
+    .exam-main::-webkit-scrollbar-track { background: transparent; }
+    .main-content::-webkit-scrollbar-thumb,
+    .exam-main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .home-stats-row { padding: 16px 20px; }
+      .chapters-section, .exam-section { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- AUTH SCREEN -->
+<!-- ============================================================ -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <h1>Study<span>MCQ</span></h1>
+      <p>Master your exams with smart practice</p>
+    </div>
+
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="switchAuthTab('login')">Sign In</div>
+      <div class="auth-tab" onclick="switchAuthTab('register')">Register</div>
+    </div>
+
+    <!-- Login Form -->
+    <div id="login-form">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="you@example.com" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" />
+      </div>
+      <button class="btn-primary" onclick="handleLogin()">Sign In</button>
+      <div class="auth-error" id="login-error"></div>
+    </div>
+
+    <!-- Register Form -->
+    <div id="register-form" style="display:none;">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="reg-email" placeholder="you@example.com" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="reg-password" placeholder="Min. 6 characters" />
+      </div>
+      <button class="btn-primary" onclick="handleRegister()">Create Account</button>
+      <div class="auth-error" id="reg-error"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MAIN APP -->
+<!-- ============================================================ -->
+<div id="app">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-logo">Study<span>MCQ</span></div>
+    <div class="nav-tabs">
+      <div class="nav-tab active" data-view="home" onclick="switchView('home', this)">📚 Practice</div>
+      <div class="nav-tab" data-view="courses" onclick="switchView('courses', this)">🎓 Courses</div>
+    </div>
+    <div class="nav-right">
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar-text">?</div>
+        <span id="user-email-display">Loading...</span>
+      </div>
+      <button class="btn-logout" onclick="handleLogout()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="app-body">
+
+    <!-- Left Sidebar: Study History -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h3>📋 Study History</h3>
+      </div>
+      <div class="sidebar-list" id="history-list">
+        <div class="sidebar-empty">No sessions yet.<br>Start practicing!</div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- HOME VIEW -->
+      <div id="home-view" class="view active">
+        <div class="home-hero">
+          <h2>Welcome back! 👋</h2>
+          <p>Continue where you left off or start a new chapter.</p>
+        </div>
+
+        <div class="home-stats-row">
+          <div class="stat-card">
+            <div class="label">Total Questions</div>
+            <div class="value" id="stat-total">—</div>
+            <div class="sub">answered</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Correct</div>
+            <div class="value" id="stat-correct" style="color:var(--green)">—</div>
+            <div class="sub">overall</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Exams Taken</div>
+            <div class="value" id="stat-exams">—</div>
+            <div class="sub">completed</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Avg. Score</div>
+            <div class="value" id="stat-avg">—</div>
+            <div class="sub">on exams</div>
+          </div>
+        </div>
+
+        <div class="chapters-section">
+          <div class="section-title">📖 Practice by Chapter</div>
+          <div class="chapters-grid" id="chapters-grid">
+            <!-- Generated by JS -->
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="chapters-section" style="padding-top:24px;">
+          <div class="section-title">🧪 Exam Mode</div>
+        </div>
+        <div class="exam-section">
+          <div class="exam-card" onclick="openFullExamModal()">
+            <div class="exam-card-icon">📝</div>
+            <h3>Full Exam</h3>
+            <p>50 questions from all chapters. Timed 60 minutes. Simulates the real exam.</p>
+          </div>
+          <div class="exam-card" onclick="openCustomExamModal()">
+            <div class="exam-card-icon">⚙️</div>
+            <h3>Custom Exam</h3>
+            <p>Configure question source, chapter selection, count, and timer to your needs.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- COURSES VIEW -->
+      <div id="courses-view" class="view">
+        <div class="courses-placeholder">
+          <div class="courses-icon">🎓</div>
+          <h2>Courses Coming Soon</h2>
+          <p>We're preparing comprehensive course materials to complement your practice. Check back soon!</p>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- QUIZ VIEW (overlay over main content, full app-body) -->
+  <div id="quiz-view">
+    <div class="quiz-header">
+      <div>
+        <div class="quiz-title" id="quiz-title">Chapter 1</div>
+        <div class="quiz-breadcrumb" id="quiz-breadcrumb">Question 1 of 50</div>
+      </div>
+      <div class="quiz-meta">
+        <div class="score-badge green" id="correct-badge">✓ 0</div>
+        <div class="score-badge red" id="wrong-badge">✗ 0</div>
+        <button class="btn-back" onclick="exitQuiz()">← Back</button>
+      </div>
+    </div>
+    <div class="quiz-body">
+      <div class="question-container">
+        <div class="question-counter" id="question-counter"></div>
+        <div class="question-text" id="question-text"></div>
+        <div class="options-list" id="options-list"></div>
+        <div class="feedback-area" id="feedback-area"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXAM VIEW -->
+  <div id="exam-view">
+    <div class="exam-header">
+      <div>
+        <div class="quiz-title" id="exam-title">Full Exam</div>
+        <div class="exam-progress-info" id="exam-progress-info">Question 1 of 50</div>
+      </div>
+      <div class="exam-timer" id="exam-timer">60:00</div>
+      <button class="btn-back" onclick="confirmExitExam()">← Exit</button>
+    </div>
+    <div class="exam-body">
+      <div class="exam-main">
+        <div class="exam-question-wrap">
+          <div class="question-counter" id="exam-q-counter"></div>
+          <div class="question-text" id="exam-q-text" style="font-family:'Times New Roman',serif;font-size:20px;color:var(--text);line-height:1.6;margin-bottom:32px;"></div>
+          <div class="options-list" id="exam-options-list"></div>
+          <div class="exam-q-nav">
+            <button class="btn-nav" id="exam-prev-btn" onclick="examNavigate(-1)">← Previous</button>
+            <button class="btn-nav" onclick="examSkip()">Skip →</button>
+            <button class="btn-nav primary" id="exam-next-btn" onclick="examNavigate(1)">Next →</button>
+          </div>
+        </div>
+      </div>
+      <div class="exam-sidebar">
+        <h4>Questions</h4>
+        <div class="q-grid" id="q-grid"></div>
+        <button class="btn-submit-exam" onclick="submitExam()">Submit Exam</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- MODALS -->
+<!-- ============================================================ -->
+
+<!-- Full Exam Modal -->
+<div class="modal-overlay" id="full-exam-modal">
+  <div class="modal">
+    <h2>📝 Full Exam</h2>
+    <p>Ready to test yourself across all 10 chapters?</p>
+    <div class="modal-info-list">
+      <div class="modal-info-item"><span class="icon">⏱️</span> 60-minute timer</div>
+      <div class="modal-info-item"><span class="icon">📊</span> 50 questions (5 per chapter)</div>
+      <div class="modal-info-item"><span class="icon">🔀</span> Questions selected randomly</div>
+      <div class="modal-info-item"><span class="icon">↕️</span> Navigate freely between questions</div>
+      <div class="modal-info-item"><span class="icon">📋</span> Results shown at the end</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('full-exam-modal')">Cancel</button>
+      <button class="btn-confirm" onclick="startFullExam()">Start Exam</button>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Exam Modal -->
+<div class="modal-overlay" id="custom-exam-modal">
+  <div class="modal">
+    <h2>⚙️ Custom Exam</h2>
+    <p>Configure your exam settings below.</p>
+
+    <div class="config-section">
+      <h4>Question Source</h4>
+      <div class="toggle-group" id="source-group">
+        <button class="toggle-btn active" data-val="all" onclick="selectToggle('source-group', this)">All Questions</button>
+        <button class="toggle-btn" data-val="seen" onclick="selectToggle('source-group', this)">Previously Seen</button>
+        <button class="toggle-btn" data-val="unseen" onclick="selectToggle('source-group', this)">Unseen Only</button>
+        <button class="toggle-btn" data-val="wrong" onclick="selectToggle('source-group', this)">Answered Wrong</button>
+      </div>
+    </div>
+
+    <div class="config-section">
+      <h4>Chapters</h4>
+      <div style="margin-bottom:8px;">
+        <button class="toggle-btn active" onclick="selectAllChapters(true)">All</button>
+        <button class="toggle-btn" onclick="selectAllChapters(false)">None</button>
+      </div>
+      <div class="chapters-checkboxes" id="chapters-checkboxes">
+        <!-- JS generated -->
+      </div>
+    </div>
+
+    <div class="config-section">
+      <h4>Question Count</h4>
+      <div class="toggle-group" id="count-group">
+        <button class="toggle-btn" data-val="25" onclick="selectToggle('count-group', this)">25</button>
+        <button class="toggle-btn active" data-val="50" onclick="selectToggle('count-group', this)">50</button>
+        <button class="toggle-btn" data-val="75" onclick="selectToggle('count-group', this)">75</button>
+        <button class="toggle-btn" data-val="100" onclick="selectToggle('count-group', this)">100</button>
+      </div>
+    </div>
+
+    <div class="config-section">
+      <h4>Timer</h4>
+      <div class="toggle-group" id="timer-group">
+        <button class="toggle-btn" data-val="30" onclick="selectToggle('timer-group', this)">30 min</button>
+        <button class="toggle-btn active" data-val="60" onclick="selectToggle('timer-group', this)">60 min</button>
+        <button class="toggle-btn" data-val="90" onclick="selectToggle('timer-group', this)">90 min</button>
+        <button class="toggle-btn" data-val="0" onclick="selectToggle('timer-group', this)">No Timer</button>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('custom-exam-modal')">Cancel</button>
+      <button class="btn-confirm" onclick="startCustomExam()">Start Exam</button>
+    </div>
+  </div>
+</div>
+
+<!-- Exam Results Modal -->
+<div class="modal-overlay" id="results-modal">
+  <div class="modal">
+    <h2>🏁 Exam Results</h2>
+    <div class="results-score-big">
+      <div class="pct" id="result-pct">0%</div>
+      <div class="sub" id="result-grade">—</div>
+    </div>
+    <div class="results-breakdown">
+      <div class="rb-item">
+        <div class="val" id="result-correct" style="color:var(--green)">0</div>
+        <div class="lbl">Correct</div>
+      </div>
+      <div class="rb-item">
+        <div class="val" id="result-wrong" style="color:var(--red)">0</div>
+        <div class="lbl">Wrong</div>
+      </div>
+      <div class="rb-item">
+        <div class="val" id="result-skipped" style="color:var(--yellow)">0</div>
+        <div class="lbl">Skipped</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-confirm" onclick="closeExamResults()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT -->
+<!-- ============================================================ -->
+<script>
+// ============================================================
+// CONFIGURATION — Replace with your Supabase project values
+// ============================================================
+const SUPABASE_URL = 'https://qlgpftjldvvzynzqycmj.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsZ3BmdGpsZHZ2enluenF5Y21qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3Mjg4NDIsImV4cCI6MjA4ODMwNDg0Mn0.hrTPPWHjV0r4-LhPqLblkyoUZotTWYWWSL7lH1hzrnI';
+
+// ============================================================
+// SUPABASE CLIENT (minimal vanilla implementation)
+// ============================================================
+const supabase = (() => {
+  const headers = {
+    'apikey': SUPABASE_ANON_KEY,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  };
+
+  let _token = null;
+  let _user = null;
+
+  function authHeaders() {
+    return _token ? { ...headers, 'Authorization': `Bearer ${_token}` } : { ...headers };
+  }
+
+  // REST helper
+  async function rest(path, options = {}) {
+    const url = `${SUPABASE_URL}/rest/v1/${path}`;
+    const res = await fetch(url, { ...options, headers: { ...authHeaders(), ...(options.headers || {}) } });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ message: res.statusText }));
+      throw new Error(err.message || err.error_description || 'Request failed');
+    }
+    const text = await res.text();
+    return text ? JSON.parse(text) : [];
+  }
+
+  // Auth helper
+  async function authPost(path, body) {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/${path}`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (data.error || data.error_description || (data.msg && !data.access_token)) {
+      throw new Error(data.error_description || data.msg || data.error || 'Auth error');
+    }
+    return data;
+  }
+
+  return {
+    auth: {
+      async signUp(email, password) {
+        const data = await authPost('signup', { email, password });
+        _token = data.access_token;
+        _user = data.user;
+        localStorage.setItem('sb_session', JSON.stringify({ token: _token, user: _user }));
+        return { user: _user };
+      },
+      async signIn(email, password) {
+        const data = await authPost('token?grant_type=password', { email, password });
+        _token = data.access_token;
+        _user = data.user;
+        localStorage.setItem('sb_session', JSON.stringify({ token: _token, user: _user }));
+        return { user: _user };
+      },
+      signOut() {
+        _token = null; _user = null;
+        localStorage.removeItem('sb_session');
+      },
+      restoreSession() {
+        const raw = localStorage.getItem('sb_session');
+        if (!raw) return null;
+        try {
+          const s = JSON.parse(raw);
+          _token = s.token; _user = s.user;
+          return _user;
+        } catch { return null; }
+      },
+      getUser() { return _user; }
+    },
+
+    // Table queries
+    from(table) {
+      let _filters = [];
+      let _select = '*';
+      let _order = null;
+      let _limit = null;
+
+      const obj = {
+        select(cols = '*') { _select = cols; return obj; },
+        eq(col, val) { _filters.push(`${col}=eq.${encodeURIComponent(val)}`); return obj; },
+        order(col, { ascending = true } = {}) { _order = `${col}.${ascending ? 'asc' : 'desc'}`; return obj; },
+        limit(n) { _limit = n; return obj; },
+        async single() {
+          const rows = await obj._exec('GET');
+          return rows.length ? rows[0] : null;
+        },
+        async _exec(method, body) {
+          let path = `${table}?select=${_select}`;
+          if (_filters.length) path += '&' + _filters.join('&');
+          if (_order) path += `&order=${_order}`;
+          if (_limit) path += `&limit=${_limit}`;
+          return rest(path, { method, body: body ? JSON.stringify(body) : undefined });
+        },
+        async insert(data) {
+          return rest(table, { method: 'POST', body: JSON.stringify(data) });
+        },
+        async upsert(data, { onConflict } = {}) {
+          let path = table;
+          if (onConflict) path += `?on_conflict=${onConflict}`;
+          return rest(path, {
+            method: 'POST',
+            headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' },
+            body: JSON.stringify(data)
+          });
+        },
+        async update(data) {
+          let path = `${table}`;
+          if (_filters.length) path += '?' + _filters.join('&');
+          return rest(path, { method: 'PATCH', body: JSON.stringify(data) });
+        },
+        async delete() {
+          let path = table;
+          if (_filters.length) path += '?' + _filters.join('&');
+          return rest(path, { method: 'DELETE' });
+        },
+        then(resolve, reject) { return obj._exec('GET').then(resolve, reject); }
+      };
+      return obj;
+    }
+  };
+})();
+
+// ============================================================
+// APP STATE
+// ============================================================
+const state = {
+  user: null,
+  // Quiz
+  currentChapter: null,
+  sessionId: null,
+  questions: [],
+  currentQuestionIdx: 0,
+  correctAnswers: 0,
+  wrongAnswers: 0,
+  sessionAnswers: {},
+  // Exam
+  examSessionId: null,
+  examQuestions: [],
+  examAnswers: {},
+  examCurrentIdx: 0,
+  examTimerSeconds: 3600,
+  examTimerInterval: null,
+  examConfig: null,
+  // Stats for home
+  chapterProgress: {} // chapter -> { correct, wrong, current_question }
+};
+
+// ============================================================
+// CHAPTER DATA (50 questions per chapter)
+// NOTE: In production, questions come from Supabase `questions` table.
+// This local array is used if DB fetch fails or for seeding.
+// ============================================================
+const CHAPTER_NAMES = [
+  'Chapter 1', 'Chapter 2', 'Chapter 3', 'Chapter 4', 'Chapter 5',
+  'Chapter 6', 'Chapter 7', 'Chapter 8', 'Chapter 9', 'Chapter 10'
+];
+
+// Placeholder question generator — replace with real DB questions
+function makePlaceholderQuestion(chapter, idx) {
+  return {
+    id: `local_${chapter}_${idx}`,
+    chapter,
+    question: `[Chapter ${chapter}] Question ${idx}: This is a sample question. In a real deployment, questions are loaded from your Supabase "questions" table.`,
+    option_a: `Option A — Answer choice one`,
+    option_b: `Option B — Answer choice two`,
+    option_c: `Option C — Answer choice three`,
+    option_d: `Option D — Answer choice four`,
+    option_e: `Option E — Answer choice five`,
+    correct_answers: ['A','B']
+  };
+}
+
+// ============================================================
+// AUTH FUNCTIONS
+// ============================================================
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t, i) => {
+    t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'));
+  });
+  document.getElementById('login-form').style.display = tab === 'login' ? '' : 'none';
+  document.getElementById('register-form').style.display = tab === 'register' ? '' : 'none';
+}
+
+async function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.textContent = '';
+  if (!email || !password) { errEl.textContent = 'Please fill in all fields.'; return; }
+  const btn = event.target;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span>Signing in…';
+  try {
+    const { user } = await supabase.auth.signIn(email, password);
+    state.user = user;
+    initApp();
+  } catch (e) {
+    errEl.textContent = e.message;
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+  }
+}
+
+async function handleRegister() {
+  const email = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const errEl = document.getElementById('reg-error');
+  errEl.textContent = '';
+  if (!email || !password) { errEl.textContent = 'Please fill in all fields.'; return; }
+  if (password.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; return; }
+  const btn = event.target;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span>Creating account…';
+  try {
+    const { user } = await supabase.auth.signUp(email, password);
+    state.user = user;
+    initApp();
+  } catch (e) {
+    errEl.textContent = e.message;
+    btn.disabled = false;
+    btn.textContent = 'Create Account';
+  }
+}
+
+function handleLogout() {
+  supabase.auth.signOut();
+  state.user = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'flex';
+}
+
+// ============================================================
+// APP INIT
+// ============================================================
+async function initApp() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+
+  const email = state.user.email || '';
+  document.getElementById('user-email-display').textContent = email.split('@')[0];
+  document.getElementById('user-avatar-text').textContent = email[0]?.toUpperCase() || '?';
+
+  buildChapterGrid();
+  buildCustomExamChapters();
+  await Promise.all([loadHistory(), loadStats()]);
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function switchView(view, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(view + '-view').classList.add('active');
+  if (el) el.classList.add('active');
+
+  // Hide quiz/exam overlays
+  document.getElementById('quiz-view').classList.remove('active');
+  document.getElementById('exam-view').classList.remove('active');
+  document.querySelector('.app-body').style.display = 'flex';
+}
+
+// ============================================================
+// CHAPTER GRID
+// ============================================================
+function buildChapterGrid() {
+  const grid = document.getElementById('chapters-grid');
+  grid.innerHTML = '';
+  for (let i = 1; i <= 10; i++) {
+    const prog = state.chapterProgress[i] || {};
+    const correct = prog.correct || 0;
+    const wrong = prog.wrong || 0;
+    const pct = Math.round(((prog.current_question || 1) - 1) / 50 * 100);
+    const card = document.createElement('div');
+    card.className = 'chapter-card';
+    card.innerHTML = `
+      <div class="chapter-num">Chapter ${i}</div>
+      <div class="chapter-name">${CHAPTER_NAMES[i-1]}</div>
+      <div class="chapter-progress-wrap">
+        <div class="chapter-progress-label">
+          <span>${pct}% complete</span>
+          <span>${correct}✓ ${wrong}✗</span>
+        </div>
+        <div class="chapter-progress-bar">
+          <div class="chapter-progress-fill" style="width:${pct}%"></div>
+        </div>
+      </div>
+      <div class="chapter-meta">50 questions</div>
+    `;
+    card.onclick = () => openChapter(i);
+    grid.appendChild(card);
+  }
+}
+
+// ============================================================
+// STUDY HISTORY
+// ============================================================
+async function loadHistory() {
+  if (!state.user) return;
+  try {
+    const sessions = await supabase.from('study_sessions')
+      .select('*')
+      .eq('user_id', state.user.id)
+      .order('last_activity', { ascending: false })
+      .limit(20);
+
+    // Update chapterProgress for grid
+    state.chapterProgress = {};
+    sessions.forEach(s => {
+      if (!state.chapterProgress[s.chapter]) {
+        state.chapterProgress[s.chapter] = {
+          correct: s.correct_answers,
+          wrong: s.wrong_answers,
+          current_question: s.current_question
+        };
+      }
+    });
+
+    renderHistory(sessions);
+    buildChapterGrid();
+  } catch (e) {
+    console.warn('History load failed:', e.message);
+  }
+}
+
+function renderHistory(sessions) {
+  const list = document.getElementById('history-list');
+  if (!sessions || !sessions.length) {
+    list.innerHTML = '<div class="sidebar-empty">No sessions yet.<br>Start practicing!</div>';
+    return;
+  }
+  list.innerHTML = '';
+  sessions.forEach(s => {
+    const total = s.total_questions || 50;
+    const remaining = total - s.correct_answers - s.wrong_answers;
+    const gPct = Math.round(s.correct_answers / total * 100);
+    const rPct = Math.round(s.wrong_answers / total * 100);
+    const wPct = 100 - gPct - rPct;
+    const dateStr = new Date(s.last_activity).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.innerHTML = `
+      <div class="history-item-top">
+        <div class="history-chapter">Chapter ${s.chapter}</div>
+        <div class="history-date">${dateStr}</div>
+      </div>
+      <div class="history-stats">
+        <span class="stat-pill green">${s.correct_answers} ✓</span>
+        <span class="stat-pill red">${s.wrong_answers} ✗</span>
+        <span class="stat-pill gray">${remaining} left</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="pb-green" style="width:${gPct}%"></div>
+        <div class="pb-red" style="width:${rPct}%"></div>
+        <div class="pb-white" style="width:${wPct}%"></div>
+      </div>
+    `;
+    item.onclick = () => openChapter(s.chapter, s);
+    list.appendChild(item);
+  });
+}
+
+// ============================================================
+// STATS
+// ============================================================
+async function loadStats() {
+  if (!state.user) return;
+  try {
+    const [sessions, examResults] = await Promise.all([
+      supabase.from('study_sessions').select('correct_answers,wrong_answers').eq('user_id', state.user.id),
+      supabase.from('exam_results').select('score,correct_answers,wrong_answers').eq('user_id', state.user.id)
+    ]);
+
+    let totalQ = 0, totalCorrect = 0;
+    sessions.forEach(s => { totalQ += s.correct_answers + s.wrong_answers; totalCorrect += s.correct_answers; });
+
+    const avgScore = examResults.length
+      ? Math.round(examResults.reduce((a, r) => a + r.score, 0) / examResults.length)
+      : 0;
+
+    document.getElementById('stat-total').textContent = totalQ;
+    document.getElementById('stat-correct').textContent = totalCorrect;
+    document.getElementById('stat-exams').textContent = examResults.length;
+    document.getElementById('stat-avg').textContent = examResults.length ? avgScore + '%' : '—';
+  } catch (e) {
+    console.warn('Stats load failed:', e.message);
+  }
+}
+
+// ============================================================
+// SESSION MANAGEMENT (Practice Mode)
+// ============================================================
+
+/**
+ * Load questions for a chapter from Supabase, fallback to local placeholders
+ */
+async function fetchQuestions(chapter) {
+  try {
+    const rows = await supabase.from('questions')
+      .select('*')
+      .eq('chapter', chapter)
+      .order('id', { ascending: true });
+    if (rows && rows.length) return rows;
+  } catch (e) {
+    console.warn('DB questions fetch failed, using placeholder questions');
+  }
+  // Fallback placeholders
+  const qs = [];
+  for (let i = 1; i <= 50; i++) qs.push(makePlaceholderQuestion(chapter, i));
+  return qs;
+}
+
+/**
+ * Find existing open session for chapter
+ */
+async function loadSession(chapter) {
+  try {
+    const rows = await supabase.from('study_sessions')
+      .select('*')
+      .eq('user_id', state.user.id)
+      .eq('chapter', chapter)
+      .order('last_activity', { ascending: false })
+      .limit(1);
+    return rows && rows.length ? rows[0] : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * Create a new session in DB
+ */
+async function createSession(chapter) {
+  try {
+    const rows = await supabase.from('study_sessions').insert({
+      user_id: state.user.id,
+      chapter,
+      current_question: 1,
+      correct_answers: 0,
+      wrong_answers: 0,
+      answers: {},
+      total_questions: 50,
+      started_at: new Date().toISOString(),
+      last_activity: new Date().toISOString()
+    });
+    return rows && rows.length ? rows[0] : null;
+  } catch (e) {
+    console.warn('Create session failed:', e.message);
+    return { id: 'local_' + Date.now(), chapter, current_question: 1, correct_answers: 0, wrong_answers: 0, answers: {} };
+  }
+}
+
+/**
+ * Save progress after every answer
+ */
+async function saveProgress() {
+  if (!state.sessionId || state.sessionId.startsWith('local_')) return;
+  try {
+    await supabase.from('study_sessions')
+      .update({
+        current_question: state.currentQuestionIdx + 1,
+        correct_answers: state.correctAnswers,
+        wrong_answers: state.wrongAnswers,
+        answers: state.sessionAnswers,
+        last_activity: new Date().toISOString()
+      })
+      .eq('id', state.sessionId);
+  } catch (e) {
+    console.warn('Save progress failed:', e.message);
+  }
+}
+
+/**
+ * Update question_stats after answering
+ */
+async function updateQuestionStats(questionId, isCorrect) {
+  try {
+    // Try upsert — if row exists update, else create
+    const existing = await supabase.from('question_stats')
+      .select('*')
+      .eq('question_id', questionId)
+      .eq('user_id', state.user.id)
+      .limit(1);
+    const row = existing && existing.length ? existing[0] : null;
+
+    if (row) {
+      await supabase.from('question_stats')
+        .update({
+          times_seen: (row.times_seen || 0) + 1,
+          times_correct: (row.times_correct || 0) + (isCorrect ? 1 : 0),
+          times_wrong: (row.times_wrong || 0) + (isCorrect ? 0 : 1)
+        })
+        .eq('question_id', questionId)
+        .eq('user_id', state.user.id);
+    } else {
+      await supabase.from('question_stats').insert({
+        question_id: questionId,
+        user_id: state.user.id,
+        times_seen: 1,
+        times_correct: isCorrect ? 1 : 0,
+        times_wrong: isCorrect ? 0 : 1
+      });
+    }
+  } catch (e) { /* non-critical */ }
+}
+
+/**
+ * Open chapter — detect existing session or start new
+ */
+async function openChapter(chapter, existingSession = null) {
+  const questions = await fetchQuestions(chapter);
+  state.questions = questions;
+  state.currentChapter = chapter;
+
+  const session = existingSession || await loadSession(chapter);
+
+  if (session) {
+    // Resume
+    state.sessionId = session.id;
+    state.currentQuestionIdx = Math.max(0, (session.current_question || 1) - 1);
+    state.correctAnswers = session.correct_answers || 0;
+    state.wrongAnswers = session.wrong_answers || 0;
+    state.sessionAnswers = session.answers || {};
+    showToast(`Resuming Chapter ${chapter} from question ${state.currentQuestionIdx + 1}`);
+  } else {
+    // New session
+    const newSession = await createSession(chapter);
+    state.sessionId = newSession ? newSession.id : 'local_' + Date.now();
+    state.currentQuestionIdx = 0;
+    state.correctAnswers = 0;
+    state.wrongAnswers = 0;
+    state.sessionAnswers = {};
+  }
+
+  showQuizView();
+}
+
+/**
+ * Start a new session (reset existing)
+ */
+async function startSession(chapter) {
+  // Delete old session for this chapter
+  try {
+    await supabase.from('study_sessions')
+      .delete()
+      .eq('user_id', state.user.id)
+      .eq('chapter', chapter);
+  } catch (e) {}
+  openChapter(chapter, null);
+}
+
+// ============================================================
+// QUIZ UI
+// ============================================================
+function showQuizView() {
+  document.querySelector('.app-body').style.display = 'none';
+  document.getElementById('quiz-view').classList.add('active');
+  document.getElementById('exam-view').classList.remove('active');
+  renderQuestion();
+}
+
+function exitQuiz() {
+  document.getElementById('quiz-view').classList.remove('active');
+  document.querySelector('.app-body').style.display = 'flex';
+  loadHistory();
+  loadStats();
+}
+
+function renderQuestion() {
+  const q = state.questions[state.currentQuestionIdx];
+  if (!q) return;
+
+  // Normalize correct_answers to array
+  const correctArr = Array.isArray(q.correct_answers)
+    ? q.correct_answers
+    : (typeof q.correct_answers === 'string'
+        ? JSON.parse(q.correct_answers)
+        : [q.correct_answer]);
+
+  const isMulti = correctArr.length > 1;
+
+  document.getElementById('quiz-title').textContent = `Chapter ${state.currentChapter}`;
+  document.getElementById('quiz-breadcrumb').textContent = `Question ${state.currentQuestionIdx + 1} of ${state.questions.length}`;
+  document.getElementById('question-counter').textContent = `Q${state.currentQuestionIdx + 1} / ${state.questions.length}`;
+  document.getElementById('question-text').textContent = q.question + (isMulti ? ` (${correctArr.length} correct answers)` : '');
+  document.getElementById('correct-badge').textContent = `✓ ${state.correctAnswers}`;
+  document.getElementById('wrong-badge').textContent = `✗ ${state.wrongAnswers}`;
+
+  const opts = document.getElementById('options-list');
+  opts.innerHTML = '';
+  const choices = [
+    { letter: 'A', text: q.option_a },
+    { letter: 'B', text: q.option_b },
+    { letter: 'C', text: q.option_c },
+    { letter: 'D', text: q.option_d },
+    { letter: 'E', text: q.option_e }
+  ].filter(c => c.text && c.text.trim() !== '');
+
+  if (isMulti) {
+    // Multi-select mode: show checkboxes, confirm button
+    state._multiSelected = new Set();
+    choices.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.innerHTML = `<span class="option-letter">${c.letter}</span><span>${c.text}</span>`;
+      btn.dataset.letter = c.letter;
+      btn.onclick = () => {
+        if (state._multiSelected.has(c.letter)) {
+          state._multiSelected.delete(c.letter);
+          btn.style.borderColor = '';
+          btn.style.background = '';
+        } else {
+          state._multiSelected.add(c.letter);
+          btn.style.borderColor = 'var(--accent)';
+          btn.style.background = 'rgba(79,142,247,0.1)';
+        }
+      };
+      opts.appendChild(btn);
+    });
+
+    // Confirm button
+    const confirmBtn = document.createElement('button');
+    confirmBtn.className = 'btn-primary';
+    confirmBtn.style.marginTop = '16px';
+    confirmBtn.style.fontFamily = "'Times New Roman', serif";
+    confirmBtn.textContent = 'Confirm answers';
+    confirmBtn.onclick = () => handleMultiAnswer(correctArr, q);
+    opts.appendChild(confirmBtn);
+  } else {
+    // Single answer mode
+    choices.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.innerHTML = `<span class="option-letter">${c.letter}</span><span>${c.text}</span>`;
+      btn.onclick = () => handleAnswer(c.letter, correctArr[0], q);
+      opts.appendChild(btn);
+    });
+  }
+
+  document.getElementById('feedback-area').classList.remove('show');
+  document.getElementById('feedback-area').textContent = '';
+}
+
+async function handleAnswer(chosen, correctAnswer, question) {
+  const btns = document.querySelectorAll('#options-list .option-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const isCorrect = chosen === correctAnswer;
+
+  btns.forEach(b => {
+    const letter = b.querySelector('.option-letter').textContent;
+    if (letter === correctAnswer) b.classList.add('correct');
+    if (letter === chosen && !isCorrect) b.classList.add('wrong');
+  });
+
+  const feedback = document.getElementById('feedback-area');
+  if (isCorrect) {
+    state.correctAnswers++;
+    state.sessionAnswers[state.currentQuestionIdx + 1] = chosen;
+    feedback.className = 'feedback-area show correct';
+    feedback.textContent = '✓ Correct! Moving to next question…';
+  } else {
+    state.wrongAnswers++;
+    feedback.className = 'feedback-area show wrong';
+    feedback.textContent = `✗ Incorrect. The correct answer is ${correctAnswer}. Restarting from question 1…`;
+  }
+
+  updateQuestionStats(question.id, isCorrect);
+
+  if (isCorrect) {
+    state.currentQuestionIdx++;
+    await saveProgress();
+    if (state.currentQuestionIdx >= state.questions.length) {
+      feedback.textContent = '🎉 Chapter complete! Well done!';
+      setTimeout(exitQuiz, 2000);
+      return;
+    }
+  } else {
+    state.currentQuestionIdx = 0;
+    await saveProgress();
+  }
+
+  setTimeout(renderQuestion, isCorrect ? 1200 : 2200);
+}
+
+async function handleMultiAnswer(correctArr, question) {
+  const selected = state._multiSelected || new Set();
+  const correctSet = new Set(correctArr);
+
+  // Compare sets
+  const isCorrect = selected.size === correctSet.size &&
+    [...selected].every(l => correctSet.has(l));
+
+  // Show correct/wrong on all buttons
+  const btns = document.querySelectorAll('#options-list .option-btn');
+  btns.forEach(b => {
+    if (!b.dataset.letter) return; // skip confirm btn
+    b.disabled = true;
+    const l = b.dataset.letter;
+    if (correctSet.has(l)) b.classList.add('correct');
+    else if (selected.has(l)) b.classList.add('wrong');
+  });
+  // Hide confirm button
+  const confirmBtn = document.querySelector('#options-list .btn-primary');
+  if (confirmBtn) confirmBtn.style.display = 'none';
+
+  const feedback = document.getElementById('feedback-area');
+  if (isCorrect) {
+    state.correctAnswers++;
+    state.sessionAnswers[state.currentQuestionIdx + 1] = [...selected].join(',');
+    feedback.className = 'feedback-area show correct';
+    feedback.textContent = '✓ Correct! Moving to next question…';
+  } else {
+    state.wrongAnswers++;
+    feedback.className = 'feedback-area show wrong';
+    feedback.textContent = `✗ Incorrect. Correct answers: ${correctArr.join(', ')}. Restarting from question 1…`;
+  }
+
+  updateQuestionStats(question.id, isCorrect);
+
+  if (isCorrect) {
+    state.currentQuestionIdx++;
+    await saveProgress();
+    if (state.currentQuestionIdx >= state.questions.length) {
+      feedback.textContent = '🎉 Chapter complete! Well done!';
+      setTimeout(exitQuiz, 2000);
+      return;
+    }
+  } else {
+    state.currentQuestionIdx = 0;
+    await saveProgress();
+  }
+
+  setTimeout(renderQuestion, isCorrect ? 1200 : 2500);
+}
+
+// ============================================================
+// EXAM MODE
+// ============================================================
+
+function openFullExamModal() {
+  openModal('full-exam-modal');
+}
+
+async function startFullExam() {
+  closeModal('full-exam-modal');
+  // 5 questions per chapter, 10 chapters
+  const allQuestions = [];
+  for (let ch = 1; ch <= 10; ch++) {
+    const qs = await fetchQuestions(ch);
+    const shuffled = shuffle([...qs]).slice(0, 5);
+    allQuestions.push(...shuffled);
+  }
+  const config = { type: 'normal', timer: 60, count: 50, chapters: 'all' };
+  await initExam(shuffle(allQuestions), config);
+}
+
+function openCustomExamModal() {
+  openModal('custom-exam-modal');
+}
+
+function buildCustomExamChapters() {
+  const container = document.getElementById('chapters-checkboxes');
+  container.innerHTML = '';
+  for (let i = 1; i <= 10; i++) {
+    const label = document.createElement('label');
+    label.className = 'ch-check';
+    label.innerHTML = `<input type="checkbox" name="ch" value="${i}" checked /> Chapter ${i}`;
+    container.appendChild(label);
+  }
+}
+
+function selectAllChapters(checked) {
+  document.querySelectorAll('#chapters-checkboxes input').forEach(cb => cb.checked = checked);
+}
+
+function selectToggle(groupId, btn) {
+  document.querySelectorAll(`#${groupId} .toggle-btn`).forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function getToggleValue(groupId) {
+  const active = document.querySelector(`#${groupId} .toggle-btn.active`);
+  return active ? active.dataset.val : null;
+}
+
+async function startCustomExam() {
+  const source = getToggleValue('source-group');
+  const count = parseInt(getToggleValue('count-group')) || 50;
+  const timer = parseInt(getToggleValue('timer-group'));
+  const chapters = [...document.querySelectorAll('#chapters-checkboxes input:checked')].map(cb => parseInt(cb.value));
+
+  if (!chapters.length) { showToast('Please select at least one chapter'); return; }
+
+  closeModal('custom-exam-modal');
+
+  // Gather questions based on source
+  let pool = [];
+
+  for (const ch of chapters) {
+    const qs = await fetchQuestions(ch);
+    let filtered = qs;
+
+    if (source === 'seen' || source === 'unseen' || source === 'wrong') {
+      try {
+        const stats = await supabase.from('question_stats')
+          .select('question_id,times_seen,times_wrong')
+          .eq('user_id', state.user.id);
+        const statsMap = {};
+        (stats || []).forEach(s => { statsMap[s.question_id] = s; });
+
+        if (source === 'seen') filtered = qs.filter(q => statsMap[q.id]?.times_seen > 0);
+        if (source === 'unseen') filtered = qs.filter(q => !statsMap[q.id] || statsMap[q.id].times_seen === 0);
+        if (source === 'wrong') filtered = qs.filter(q => statsMap[q.id]?.times_wrong > 0);
+
+        // Fill remaining with random if not enough
+        if (filtered.length < count) {
+          const ids = new Set(filtered.map(q => q.id));
+          const extras = shuffle(qs.filter(q => !ids.has(q.id)));
+          filtered = [...filtered, ...extras];
+        }
+      } catch (e) {}
+    }
+
+    pool.push(...shuffle(filtered));
+  }
+
+  pool = shuffle(pool).slice(0, count);
+  const config = { type: 'custom', timer, count, source, chapters };
+  await initExam(pool, config);
+}
+
+/**
+ * Initialize exam session
+ */
+async function initExam(questions, config) {
+  // Check for existing exam session
+  let existingExam = null;
+  try {
+    const rows = await supabase.from('exam_sessions')
+      .select('*')
+      .eq('user_id', state.user.id)
+      .order('started_at', { ascending: false })
+      .limit(1);
+    if (rows && rows.length && rows[0].remaining_time > 0) existingExam = rows[0];
+  } catch (e) {}
+
+  if (existingExam) {
+    // Ask to resume or start new
+    const resume = confirm('You have an unfinished exam. Resume it?');
+    if (resume) {
+      state.examSessionId = existingExam.id;
+      state.examQuestions = existingExam.questions;
+      state.examAnswers = existingExam.answers || {};
+      state.examTimerSeconds = existingExam.remaining_time;
+      state.examConfig = existingExam.configuration;
+      state.examCurrentIdx = 0;
+      showExamView();
+      return;
+    } else {
+      // Delete old
+      try { await supabase.from('exam_sessions').delete().eq('id', existingExam.id); } catch {}
+    }
+  }
+
+  state.examQuestions = questions;
+  state.examAnswers = {};
+  state.examCurrentIdx = 0;
+  state.examTimerSeconds = config.timer > 0 ? config.timer * 60 : null;
+  state.examConfig = config;
+
+  // Save exam session
+  try {
+    const rows = await supabase.from('exam_sessions').insert({
+      user_id: state.user.id,
+      questions,
+      answers: {},
+      remaining_time: state.examTimerSeconds || 0,
+      configuration: config,
+      started_at: new Date().toISOString()
+    });
+    state.examSessionId = rows && rows.length ? rows[0].id : null;
+  } catch (e) {
+    state.examSessionId = null;
+  }
+
+  showExamView();
+}
+
+/**
+ * Show exam UI
+ */
+function showExamView() {
+  document.querySelector('.app-body').style.display = 'none';
+  document.getElementById('quiz-view').classList.remove('active');
+  document.getElementById('exam-view').classList.add('active');
+
+  buildQGrid();
+  renderExamQuestion();
+  startExamTimer();
+}
+
+function startExamTimer() {
+  if (state.examTimerInterval) clearInterval(state.examTimerInterval);
+  if (state.examTimerSeconds === null) {
+    document.getElementById('exam-timer').textContent = 'No Limit';
+    return;
+  }
+  updateTimerDisplay();
+  state.examTimerInterval = setInterval(async () => {
+    state.examTimerSeconds--;
+    updateTimerDisplay();
+    // Save timer every 30s
+    if (state.examTimerSeconds % 30 === 0) saveExam();
+    if (state.examTimerSeconds <= 0) {
+      clearInterval(state.examTimerInterval);
+      showToast('⏰ Time is up!');
+      await submitExam();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('exam-timer');
+  const s = state.examTimerSeconds;
+  const mins = Math.floor(s / 60);
+  const secs = s % 60;
+  el.textContent = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+  el.className = 'exam-timer' + (s < 300 ? ' danger' : s < 600 ? ' warning' : '');
+}
+
+function buildQGrid() {
+  const grid = document.getElementById('q-grid');
+  grid.innerHTML = '';
+  state.examQuestions.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'q-dot' + (i === state.examCurrentIdx ? ' current' : '');
+    dot.dataset.idx = i;
+    dot.textContent = i + 1;
+    if (state.examAnswers[i] !== undefined) dot.classList.add('answered');
+    dot.onclick = () => examGoTo(i);
+    grid.appendChild(dot);
+  });
+}
+
+function renderExamQuestion() {
+  const q = state.examQuestions[state.examCurrentIdx];
+  if (!q) return;
+
+  document.getElementById('exam-title').textContent = state.examConfig?.type === 'custom' ? 'Custom Exam' : 'Full Exam';
+  document.getElementById('exam-progress-info').textContent = `Question ${state.examCurrentIdx + 1} of ${state.examQuestions.length}`;
+  document.getElementById('exam-q-counter').textContent = `Q${state.examCurrentIdx + 1} / ${state.examQuestions.length}`;
+  document.getElementById('exam-q-text').textContent = q.question;
+
+  const opts = document.getElementById('exam-options-list');
+  opts.innerHTML = '';
+  const choices = [
+    { letter: 'A', text: q.option_a },
+    { letter: 'B', text: q.option_b },
+    { letter: 'C', text: q.option_c },
+    { letter: 'D', text: q.option_d },
+    { letter: 'E', text: q.option_e }
+  ].filter(c => c.text && c.text.trim() !== '');
+
+  const correctArr = Array.isArray(q.correct_answers)
+    ? q.correct_answers
+    : (typeof q.correct_answers === 'string' ? JSON.parse(q.correct_answers) : [q.correct_answer]);
+  const isMulti = correctArr.length > 1;
+  const selected = state.examAnswers[state.examCurrentIdx]; // string "A" or "A,B,C"
+  const selectedSet = selected ? new Set(selected.split(',')) : new Set();
+
+  document.getElementById('exam-q-text').textContent = q.question + (isMulti ? ` (${correctArr.length} correct answers)` : '');
+
+  choices.forEach(c => {
+    const btn = document.createElement('button');
+    const isSelected = selectedSet.has(c.letter);
+    btn.className = 'option-btn' + (isSelected ? ' correct' : '');
+    btn.style.fontFamily = "'Times New Roman', serif";
+    btn.style.fontSize = '16px';
+    btn.dataset.letter = c.letter;
+    btn.innerHTML = `<span class="option-letter">${c.letter}</span><span>${c.text}</span>`;
+    btn.onclick = () => examSelectAnswer(c.letter, isMulti);
+    opts.appendChild(btn);
+  });
+
+  // Update nav buttons
+  document.getElementById('exam-prev-btn').disabled = state.examCurrentIdx === 0;
+  document.getElementById('exam-next-btn').textContent = state.examCurrentIdx === state.examQuestions.length - 1 ? 'Finish →' : 'Next →';
+
+  updateQGrid();
+}
+
+function examSelectAnswer(letter, isMulti) {
+  if (isMulti) {
+    const current = state.examAnswers[state.examCurrentIdx];
+    const selectedSet = current ? new Set(current.split(',')) : new Set();
+    if (selectedSet.has(letter)) selectedSet.delete(letter);
+    else selectedSet.add(letter);
+    state.examAnswers[state.examCurrentIdx] = [...selectedSet].sort().join(',') || undefined;
+    if (!state.examAnswers[state.examCurrentIdx]) delete state.examAnswers[state.examCurrentIdx];
+  } else {
+    state.examAnswers[state.examCurrentIdx] = letter;
+  }
+  renderExamQuestion();
+  saveExam();
+}
+
+function examNavigate(dir) {
+  const newIdx = state.examCurrentIdx + dir;
+  if (newIdx < 0 || newIdx >= state.examQuestions.length) {
+    if (dir === 1) submitExam();
+    return;
+  }
+  state.examCurrentIdx = newIdx;
+  renderExamQuestion();
+}
+
+function examGoTo(idx) {
+  state.examCurrentIdx = idx;
+  renderExamQuestion();
+}
+
+function examSkip() {
+  examNavigate(1);
+}
+
+function updateQGrid() {
+  document.querySelectorAll('.q-dot').forEach(dot => {
+    const i = parseInt(dot.dataset.idx);
+    dot.className = 'q-dot';
+    if (i === state.examCurrentIdx) dot.classList.add('current');
+    else if (state.examAnswers[i] !== undefined) dot.classList.add('answered');
+  });
+}
+
+async function saveExam() {
+  if (!state.examSessionId) return;
+  try {
+    await supabase.from('exam_sessions')
+      .update({
+        answers: state.examAnswers,
+        remaining_time: state.examTimerSeconds || 0
+      })
+      .eq('id', state.examSessionId);
+  } catch (e) {}
+}
+
+async function submitExam() {
+  if (state.examTimerInterval) clearInterval(state.examTimerInterval);
+
+  let correct = 0, wrong = 0, skipped = 0;
+  state.examQuestions.forEach((q, i) => {
+    const ans = state.examAnswers[i];
+    if (ans === undefined || ans === '') { skipped++; return; }
+    const correctArr = Array.isArray(q.correct_answers)
+      ? q.correct_answers
+      : (typeof q.correct_answers === 'string' ? JSON.parse(q.correct_answers) : [q.correct_answer]);
+    const selectedSet = new Set(ans.split(','));
+    const correctSet = new Set(correctArr);
+    const isCorrect = selectedSet.size === correctSet.size && [...selectedSet].every(l => correctSet.has(l));
+    if (isCorrect) correct++;
+    else wrong++;
+  });
+
+  const total = state.examQuestions.length;
+  const score = Math.round(correct / total * 100);
+
+  // Save results
+  try {
+    await supabase.from('exam_results').insert({
+      user_id: state.user.id,
+      exam_type: state.examConfig?.type || 'normal',
+      configuration: state.examConfig,
+      correct_answers: correct,
+      wrong_answers: wrong,
+      score,
+      total_questions: total,
+      created_at: new Date().toISOString()
+    });
+    // Clean up session
+    if (state.examSessionId) {
+      await supabase.from('exam_sessions').delete().eq('id', state.examSessionId);
+    }
+  } catch (e) { console.warn('Save results failed:', e.message); }
+
+  // Show results
+  document.getElementById('result-pct').textContent = score + '%';
+  document.getElementById('result-pct').className = 'pct ' + (score >= 60 ? 'pass' : 'fail');
+  document.getElementById('result-grade').textContent = score >= 80 ? 'Excellent! 🎉' : score >= 60 ? 'Passed ✓' : 'Needs improvement ✗';
+  document.getElementById('result-correct').textContent = correct;
+  document.getElementById('result-wrong').textContent = wrong;
+  document.getElementById('result-skipped').textContent = skipped;
+
+  openModal('results-modal');
+}
+
+function confirmExitExam() {
+  if (confirm('Exit exam? Your progress will be saved.')) {
+    saveExam();
+    if (state.examTimerInterval) clearInterval(state.examTimerInterval);
+    document.getElementById('exam-view').classList.remove('active');
+    document.querySelector('.app-body').style.display = 'flex';
+  }
+}
+
+function closeExamResults() {
+  closeModal('results-modal');
+  document.getElementById('exam-view').classList.remove('active');
+  document.querySelector('.app-body').style.display = 'flex';
+  loadHistory();
+  loadStats();
+}
+
+// ============================================================
+// MODAL HELPERS
+// ============================================================
+function openModal(id) {
+  document.getElementById(id).classList.add('show');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+// Close on backdrop click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('show');
+  });
+});
+
+// ============================================================
+// UTILITY
+// ============================================================
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function showToast(msg, duration = 3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ============================================================
+// BOOT
+// ============================================================
+(function boot() {
+  const user = supabase.auth.restoreSession();
+  if (user) {
+    state.user = user;
+    initApp();
+  }
+})();
+</script>
+</body>
+</html>
